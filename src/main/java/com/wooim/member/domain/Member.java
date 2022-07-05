@@ -1,6 +1,9 @@
 package com.wooim.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.intellij.lang.annotations.Pattern;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,27 +30,35 @@ public class Member implements UserDetails {
     @Id
     @Column(name = "MBR_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY) //MySQL의 AUTO_INCREMENT를 사용
+    @Schema(required = true, example = "")
     private Integer mbrId;
 
     @Column( name = "MBR_NM", nullable = false )
+    @Schema(description = "사용자 이름", required = true, example = "최우임")
     private String mbrNm;
 
     @Column( name = "MBR_PW", nullable = false )
+    @Schema(description = "사용자 비밀번호", required = true, example = "test123")
     private String mbrPw;
 
     @Column( name = "EMAIL", nullable = false, unique = true )
+    @Schema(description = "사용자 이메일", required = true, example = "wooim.choi@gmail.com")
     private String email;
 
     @Column( name = "MBR_NK_NM", nullable = true )
+    @Schema(description = "사용자 닉네임", required = false, example = "든드라")
     private String mbrNkNm;
 
     @Column( name = "PHONE", nullable = true, unique = true )
+    @Schema(description = "사용자 닉네임", required = false, example = "010-5357-5406")
     private String phone;
 
     @Column( name = "REG_DTT", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private LocalDate regDtt;
 
     @Column( name = "MOD_DTT", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private LocalDate modDtt;
 
 
