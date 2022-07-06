@@ -1,36 +1,31 @@
 package com.wooim.member.controller;
-import com.wooim.member.domain.Member;
+import com.wooim.member.domain.Test;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class HelloController {
 
-    @Operation(summary = "test hello", description = "hello api example")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK !!"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST !!"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND !!"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR !!")
-    })
     @GetMapping("/hello")
     public ResponseEntity<String> hello(
-            @Parameter(description = "이름", required = true, example = "Park") @RequestParam String name) {
+            @RequestParam String name) {
         return ResponseEntity.ok("hello " + name);
     }
 
-    @PostMapping("/hello_post")
-    public ResponseEntity<String> hello(
-            @RequestBody Member m) {
-        return ResponseEntity.ok("hello " + m.getMbrNm());
+    @RequestMapping(value = "/custom", method = RequestMethod.POST)
+    public String custom() {
+        return "custom";
+    }
+
+    public ResponseEntity<String> hello_post(
+            @org.springframework.web.bind.annotation.RequestBody Test t
+        ){
+        return ResponseEntity.ok("hello " + t.getTestStr());
     }
 
 }
