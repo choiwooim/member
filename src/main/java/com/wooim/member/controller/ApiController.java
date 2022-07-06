@@ -72,34 +72,24 @@ public class ApiController {
     @PostMapping(value = "/signup")
     @ApiOperation(value = "가입", notes = "회원가입을 한다.")
     public void signup(
-
-            @ApiParam(value = "이메일", example = "wooim.choi@gmail.com") @RequestParam String email,
-            @ApiParam(value = "비밀번호", example = "test") @RequestParam String password,
-            @ApiParam(value = "이름", example = "최우임") @RequestParam String name,
-            @ApiParam(value = "닉네임", example = "든드라") @RequestParam(required = false) String nkNm,
-            @ApiParam(value = "휴대폰번호", example = "010-1111-2222") @RequestParam(required = false) String phone
-
+            @RequestBody Member m
             ) throws Exception{
         System.out.println("test!!!!");
         Map<String,Object> retMap = new HashMap<>();
         try{
             //validation
-//            if(!isValidEmail(email)){
-//                throw new RuntimeException("이메일 형식이 올바르지 않습니다.");
-//            }
-
-
-
+            if(!isValidEmail(m.getEmail())){
+                throw new RuntimeException("이메일 형식이 올바르지 않습니다.");
+            }
             memberRepository.save(Member.builder()
-                    .email(email)
-//                    .mbrPw(encoder.encode(password))
-//                    .mbrNm(name)
-//                    .mbrNkNm(nkNm)
-//                    .phone(phone)
-//                    .email(email)
+                    .email(m.getEmail())
+                    .mbrPw(encoder.encode(m.getMbrPw()))
+                    .mbrNm(m.getMbrNm())
+                    .mbrNkNm(m.getMbrNkNm())
+                    .phone(m.getPhone())
+                    .email(m.getEmail())
                     .regDtt(LocalDate.now())
                     .modDtt(LocalDate.now())
-                    //.roles(Collections.singletonList("ROLE_USER"))
                     .build());
 
             retMap.put("ret",1);
@@ -127,7 +117,7 @@ public class ApiController {
             if(!isValidEmail(email)){
                 throw new RuntimeException("이메일 형식이 올바르지 않습니다.");
             }
-            if(phone != null && phone.length() > 0 && !isValidMobile(phone)){
+            if(!isValidMobile(phone)){
                 throw new RuntimeException("핸드폰 형식이 올바르지 않습니다.");
             }
 
@@ -157,7 +147,7 @@ public class ApiController {
         return new ResponseEntity<>(retMap, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "회원정보", notes = "내정보를 조회한다.")
+    @ApiOperation(value = "내정보", notes = "토큰정보를 통해 내정보를 조회한다.")
     @GetMapping(value = "/myinfo")
     public ResponseEntity<?> myinfo(
             @ApiParam(value = "토큰", required = true) @RequestParam String token) {
@@ -170,15 +160,11 @@ public class ApiController {
             if(!member.isEmpty()){
                 retMap.put("info",member.get().toString());
             }
-
             retMap.put("ret",1);
-
-
         }catch(Exception e){
             retMap.put("ret",9999);
             retMap.put("msg",e.getMessage());
         }
-
         return new ResponseEntity<>(retMap, HttpStatus.OK);
     }
 
@@ -189,11 +175,46 @@ public class ApiController {
 
         Map<String,Object> retMap = new HashMap<>();
         try{
+            if(!isValidMobile(phone)){
+                throw new RuntimeException("핸드폰 형식이 올바르지 않습니다.");
+            }
+
             Optional<Member>  member = memberRepository.findByPhone(phone);
 
             if(member.isEmpty()){
                 throw new RuntimeException("존재하지 않는 휴대폰번호 입니다.");
             }
+
+            retMap.put("ret",1);
+
+        }catch(Exception e){
+            retMap.put("ret",9999);
+            retMap.put("msg",e.getMessage());
+        }
+
+        return new ResponseEntity<>(retMap, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "비밀번호 재설정", notes = "비밀번호를 다시 설정한다.")
+    @GetMapping(value = "/modifyPw")
+    public ResponseEntity<?> modifyPw(
+            @ApiParam(value = "이메일", required = true) @RequestParam String email,
+            @ApiParam(value = "비밀번호", required = true) @RequestParam String password) {
+
+        Map<String,Object> retMap = new HashMap<>();
+        try{
+            //validation
+            if(!isValidEmail(email)){
+                retMap.put("msg","이메일 형식이 올바르지 않습니다.");
+                return new ResponseEntity<>(retMap, HttpStatus.OK);
+            }
+
+            Optional<Member>  member = memberRepository.findByEmail(email);
+            if(member.isEmpty()){
+                throw new RuntimeException("이메일 형식이 올바르지 않습니다.");
+            }
+
+            memberRepository.updatePassword(encoder.encode(password),member.get().getMbrId());
 
             retMap.put("ret",1);
 
@@ -224,14 +245,13 @@ public class ApiController {
      */
     public static boolean isValidMobile(String mobile) {
         boolean err = false;
-        String regex = "^\\d{3}-\\d{3,4}-\\d{4}$";
+        String regex = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(mobile);
         if(m.matches()) {
             err = true;
         }
-        return true;
-        //return err;
+        return err;
     }
 
 }

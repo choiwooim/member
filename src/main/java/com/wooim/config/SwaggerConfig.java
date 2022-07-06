@@ -38,8 +38,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Practice Swagger")
-                .description("practice swagger config")
+                .title("Member Api")
+                .description("회원가입 및 로그인 api 입니다.")
                 .version("1.0")
                 .build();
     }

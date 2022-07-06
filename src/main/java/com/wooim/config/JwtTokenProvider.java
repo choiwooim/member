@@ -45,7 +45,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
 
     // Jwt 토큰 생성
     public String createToken(String userPk) {
-        List<String> roles = Collections.singletonList("ROLE_USER");
+        List<String> roles = Collections.singletonList("ROLE_USER");    //default role
         Claims claims = Jwts.claims().setSubject(userPk);
         claims.put("roles", roles);
         Date now = new Date();

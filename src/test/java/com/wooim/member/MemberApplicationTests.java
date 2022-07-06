@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @SpringBootTest
 class MemberApplicationTests {
@@ -38,14 +40,16 @@ class MemberApplicationTests {
 	}
 
 	@Test
-	void find(){
-
-		Optional<Member> member = memberRepository.findById(1);
-
-		if(member.isPresent()){
-			Member m = member.get();
-			System.out.println("return :: " + m.getMbrNm());
+	void phone(){
+		System.out.println("test!~!~!~");
+		boolean err = false;
+		String regex = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher("01053575406");
+		if(m.matches()) {
+			err = true;
 		}
+		System.out.println(m.matches());
 
 	}
 
